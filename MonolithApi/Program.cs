@@ -14,7 +14,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDatabaseContext>(
     options => options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DataContext")
+        builder.Configuration.GetConnectionString("DockerDbContext")
         )
     );
 
@@ -56,7 +56,7 @@ var context = provider.GetRequiredService<AppDatabaseContext>();
 //context.Database.Migrate();
 DataSeeder.Initialize(context);
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

@@ -1,0 +1,23 @@
+﻿version: '3'
+services:
+  apache:
+    image: httpd:latest
+    container_name: my-apache-app
+    ports:
+    - '8080:80'
+
+  db:
+    image: postgres:latest
+   # container_name: postgres-container
+    environment:
+      POSTGRES_DB: MonolithDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 210199**
+  #  expose:
+   #   - "5432"
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "5433:5432"
+
+ 
