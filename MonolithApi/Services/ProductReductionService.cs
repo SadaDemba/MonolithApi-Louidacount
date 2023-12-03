@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using MonolithApi.Context;
 using MonolithApi.Interfaces;
@@ -165,7 +164,7 @@ namespace MonolithApi.Services
             if (product.Shop!.OwnerId != userId) throw new KeyNotFoundException(Constants.ACTION_FORBIDDEN);
 
             //Check if Reduction exists
-            if (!_context.Reductions.Any(r => r.Id == prodReduct.ReductionId)) throw new KeyNotFoundException(Constants.PRODUCT_NOT_FOUND);
+            if (!_context.Reductions.Any(r => r.Id == prodReduct.ReductionId)) throw new KeyNotFoundException(Constants.REDUCTION_NOT_FOUND);
             _context.ProductReductions.Add(prodReduct);
 
             try
@@ -181,6 +180,14 @@ namespace MonolithApi.Services
                 throw;
             }
             return prodReduct;
+        }
+        /// <inheritdoc/>
+        public async Task<IEnumerable<ProductReduction>> GetMostUsed()
+        {
+            return await _context.ProductReductions.AsNoTracking().
+                Where(pr => pr.IsActivated).
+                Include(pr=> pr.Reduction).
+               OrderByDescending(pr => pr.Reduction!.Percentage).Take(5).ToListAsync();
         }
 
         public async Task<ProductReduction> Put(int id, string userId, ProductReduction prodReduct)

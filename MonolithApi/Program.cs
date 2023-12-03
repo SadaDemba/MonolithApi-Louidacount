@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MonolithApi.Context;
+using MonolithApi.Data;
 using MonolithApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDatabaseContext>(
     options => options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DataContext")
+        builder.Configuration.GetConnectionString("LocalDataContext")
         )
     );
 
@@ -39,6 +40,18 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.RegisterAppServices();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
+
 
 var app = builder.Build();
 
@@ -48,6 +61,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowAll");
+
+using var scope = app.Services.CreateScope();
+var provider = scope.ServiceProvider;
+var context = provider.GetRequiredService<AppDatabaseContext>();
+//context.Database.Migrate();
+SeedData.Initialize(context);
 
 app.UseHttpsRedirection();
 

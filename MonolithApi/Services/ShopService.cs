@@ -122,6 +122,13 @@ namespace MonolithApi.Services
             return shop;
         }
 
+        /// <inheritdoc/>
+        public async Task<IEnumerable<Shop>> GetMostUsed()
+        {
+            return await _context.Shops.AsNoTracking().
+               OrderByDescending(s => s.Products!.Count()).Take(5).ToListAsync();
+        }
+
         public async Task<ResponseResource<Shop>> GetShopsByUser(string userId, string pageNumber, string pageSize)
         {
             IQueryable<Shop> source = _context.Shops.AsNoTracking().Where(s => s.OwnerId == userId);

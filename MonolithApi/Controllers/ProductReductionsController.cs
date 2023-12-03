@@ -16,6 +16,13 @@ namespace MonolithApi.Controllers
             iprs = productReduction;
         }
 
+        // GET: api/
+        [HttpGet("MostUsed")]
+        public async Task<ActionResult<IEnumerable<ProductType>>> GetMostUsedProdReduc()
+        {
+            return Ok(await iprs.GetMostUsed());
+        }
+
         // GET: api/ProductReductions/Shop/1
         [HttpGet("Shop/{shopId}")]
         public async Task<ActionResult<IEnumerable<ProductReduction>>> GetProductReductionsByShop(int shopId)

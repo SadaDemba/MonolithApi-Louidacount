@@ -1,6 +1,7 @@
 ﻿using MonolithApi.Resources;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.Metrics;
 using System.Text.Json.Serialization;
 
 namespace MonolithApi.Models
@@ -43,6 +44,22 @@ namespace MonolithApi.Models
         /// Date of last update
         /// </summary>
         public DateTime UpdatedAt { get; set; }
+
+        /// <summary>
+        /// Method which return true if the reduction is currently active and false otherwise
+        /// </summary>
+        [NotMapped]
+        public bool Status
+        {
+            get
+            {
+                DateTime date = DateTime.UtcNow;
+
+                return (date.Month >= BeginDate.Month && date.Month <= EndDate.Month) &&
+                    (date.Day >= BeginDate.Day && date.Day <= EndDate.Day) &&
+                    (date.TimeOfDay >= BeginDate.TimeOfDay && date.TimeOfDay <= EndDate.TimeOfDay);
+            }
+        }
 
         public Reduction()
         {
