@@ -43,6 +43,13 @@ namespace MonolithApi.Controllers
             return Ok(await ips.GetByShop(shopId, pageNumber, pageSize));
         }
 
+        //GET: api/Products/Keyword?keyword=Rose&pageNumber=1&pageSize=10
+        [HttpGet("Keyword/")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsByKeyword([FromQuery] string keyword, [FromQuery] string pageNumber, [FromQuery] string pageSize)
+        {
+            return Ok(await ips.GetByKeyword(keyword, pageNumber, pageSize));
+        }
+
         //GET: api/Products/ProdType/1?pageNumber=1&pageSize=10
         [HttpGet("ProdType/{productTypeId}")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductsByType(int productTypeId, [FromQuery] string pageNumber, [FromQuery] string pageSize)

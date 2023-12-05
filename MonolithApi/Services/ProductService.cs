@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Elfie.Serialization;
+using Microsoft.EntityFrameworkCore;
 using MonolithApi.Context;
 using MonolithApi.Interfaces;
 using MonolithApi.Models;
@@ -6,6 +7,7 @@ using MonolithApi.Resources.Pagination;
 using MonolithApi.Services.Pagination;
 using MonolithApi.Utils;
 using Npgsql;
+using System.Drawing.Printing;
 
 namespace MonolithApi.Services
 {
@@ -13,7 +15,7 @@ namespace MonolithApi.Services
     {
         private readonly AppDatabaseContext _context;
 
-        public ProductService(AppDatabaseContext context) 
+        public ProductService(AppDatabaseContext context)
         {
             _context = context;
         }
@@ -21,11 +23,11 @@ namespace MonolithApi.Services
         /// <inheritdoc/>
         public async Task Delete(int id, string userId)
         {
-            Product? product = await _context.Products.Include(p=>p.Shop).FirstOrDefaultAsync(p=> p.ProductId == id);
+            Product? product = await _context.Products.Include(p => p.Shop).FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null) throw new KeyNotFoundException(Constants.PRODUCT_NOT_FOUND);
 
-            if(product.Shop!.OwnerId != userId) throw new KeyNotFoundException(Constants.ACTION_FORBIDDEN);
+            if (product.Shop!.OwnerId != userId) throw new KeyNotFoundException(Constants.ACTION_FORBIDDEN);
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
@@ -37,7 +39,7 @@ namespace MonolithApi.Services
             Product? product = await _context.Products.
                 Include(p => p.Shop).
                 Include(p => p.ProductType).
-                Include(p => p.ProductReductions!).ThenInclude(pr => pr.Reduction).FirstOrDefaultAsync(p=>p.ProductId == id);
+                Include(p => p.ProductReductions!).ThenInclude(pr => pr.Reduction).FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null) throw new KeyNotFoundException(Constants.PRODUCT_NOT_FOUND);
 
             return product;
@@ -65,7 +67,23 @@ namespace MonolithApi.Services
             return await PaginationService<Product>.Paginate(pageNumber, pageSize, source);
         }
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
+        public async Task<ResponseResource<Product>> GetByKeyword(string keyword, string pageNumber, string pageSize)
+        {
+            IQueryable<Product> source = _context.Products.AsNoTracking().
+                Include(p => p.ProductType).
+                Include(p => p.Shop).
+                Include(p => p.ProductReductions!).ThenInclude(pr => pr.Reduction).
+                Where(p =>
+                        p.Description.ToLower().Contains(keyword) ||
+                        p.Name.ToLower().Contains(keyword)
+                    ).
+                OrderBy(p => p.CreatedAt);
+
+            return await PaginationService<Product>.Paginate(pageNumber, pageSize, source);
+        }
+
+    /// <inheritdoc/>
         public async Task<ResponseResource<Product>> GetByShop(int shopId, string pageNumber, string pageSize)
         {
             if (!_context.Shops.Any(s => s.ShopId == shopId))

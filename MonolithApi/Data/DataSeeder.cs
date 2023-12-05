@@ -67,7 +67,7 @@ namespace MonolithApi.Data
                 var productFaker = new Faker<Product>("fr")
                     .RuleFor(p => p.Name, f => f.Commerce.ProductName())
                     .RuleFor(p => p.Stock, f => f.Random.Number(1, 100))
-                    .RuleFor(p => p.Price, f => f.Random.Double(25, 1500))
+                    .RuleFor(p => p.Price, f => Math.Round(f.Random.Double(25, 1500), 2))
                     .RuleFor(p => p.Description, f => f.Lorem.Sentence())
                     .RuleFor(p => p.CreatedAt, DateTime.UtcNow)
                     .RuleFor(p => p.UpdatedAt, DateTime.UtcNow);
