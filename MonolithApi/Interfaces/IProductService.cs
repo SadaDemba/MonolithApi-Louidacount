@@ -40,5 +40,14 @@ namespace MonolithApi.Interfaces
         /// <param name="pageSize">size of our pages</param>
         /// <returns>List of product</returns>
         Task<ResponseResource<Product>> GetByPrice(double minValue, double maxValue, string pageNumber, string pageSize);
+
+        /// <summary>
+        /// Get a list of products by keyword
+        /// </summary>
+        /// <param name="keyword">the keyword we're gonna use</param>
+        /// <param name="pageNumber">Number of the page we want to retrieve</param>
+        /// <param name="pageSize">size of our pages</param>
+        /// <returns></returns>
+        Task<ResponseResource<Product>> GetByKeyword(string keyword, string pageNumber, string pageSize);
     }
 }

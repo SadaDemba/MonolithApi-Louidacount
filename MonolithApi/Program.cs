@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MonolithApi.Context;
+using MonolithApi.Data;
 using MonolithApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDatabaseContext>(
     options => options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DataContext")
+        builder.Configuration.GetConnectionString("DockerDataContext")
         )
     );
 
@@ -49,10 +50,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+using var scope = app.Services.CreateScope();
+var provider = scope.ServiceProvider;
+var context = provider.GetRequiredService<AppDatabaseContext>();
+context.Database.Migrate();
+
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
+DataSeeder.Initialize(context);
 app.Run();

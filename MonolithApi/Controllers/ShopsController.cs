@@ -51,6 +51,12 @@ namespace MonolithApi.Controllers
             return Ok(await _iss.GetShopsByUser(userId, pageNumber, pageSize));
         }
 
+        // GET: api/ProductTypes
+        [HttpGet("MostUsed")]
+        public async Task<ActionResult<IEnumerable<ProductType>>> GetMostUsedProductTypes()
+        {
+            return Ok(await _iss.GetMostUsed());
+        }
 
         // GET: api/Shops/5
         [HttpGet("{id}")]

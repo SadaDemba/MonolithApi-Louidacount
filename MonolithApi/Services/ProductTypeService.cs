@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MonolithApi.Context;
 using MonolithApi.Interfaces;
 using MonolithApi.Models;
@@ -47,6 +46,13 @@ namespace MonolithApi.Services
         {
             return await _context.ProductTypes.AsNoTracking().
                 OrderBy(pt => pt.Name).ToListAsync();
+        }
+
+        /// <inheritdoc/>
+        public async Task<IEnumerable<ProductType>> GetMostUsed()
+        {
+            return await _context.ProductTypes.AsNoTracking().
+               OrderByDescending(pt => pt.Products!.Count()).Take(5).ToListAsync();
         }
 
         /// <inheritdoc/>
@@ -127,5 +133,7 @@ namespace MonolithApi.Services
             if (exception.ConstraintName!.Equals("IX_ProductTypes_Name")) 
                 throw new BadHttpRequestException(Constants.PRODUCT_TYPE_EXIST);
         }
+
+
     }
 }

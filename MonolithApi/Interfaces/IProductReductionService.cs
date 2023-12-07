@@ -6,6 +6,13 @@ namespace MonolithApi.Interfaces
     public interface IProductReductionService : IGeneric<ProductReduction>
     {
         Task<IEnumerable<ProductReduction>> GetAllByShop(int shopId);
+
+        /// <summary>
+        /// Get the five ProductTypes which are mostly used
+        /// </summary>
+        /// <returns>A list of product type</returns>
+        Task<IEnumerable<ProductReduction>> GetMostUsed();
+
         Task<ResponseResource<ProductReduction>> GetAllPaginatedByShop(int shopId, string pageNumber, string pageSize);
 
         Task<ResponseResource<ProductReduction>> GetAllPaginated(string pageNumber, string pageSize);

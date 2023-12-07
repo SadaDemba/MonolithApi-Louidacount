@@ -6,6 +6,12 @@ namespace MonolithApi.Interfaces
     public interface IProductTypeService
     {
         /// <summary>
+        /// Get the five ProductTypes which are mostly used
+        /// </summary>
+        /// <returns>A list of product type</returns>
+        Task<IEnumerable<ProductType>> GetMostUsed();
+
+        /// <summary>
         /// Get product type by name
         /// </summary>
         /// <param name="city">The name of the product type we want to retrieve</param>
