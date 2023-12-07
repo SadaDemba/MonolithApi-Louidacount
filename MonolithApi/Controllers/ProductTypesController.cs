@@ -23,6 +23,13 @@ namespace MonolithApi.Controllers
         }
 
         // GET: api/ProductTypes
+        [HttpGet("MostUsed")]
+        public async Task<ActionResult<IEnumerable<ProductType>>> GetMostUsedProductTypes()
+        {
+            return Ok(await ips.GetMostUsed());
+        }
+
+        // GET: api/ProductTypes
         [HttpGet("Paginated")]
         public async Task<ActionResult<IEnumerable<ProductType>>> GetProductTypesPaginated([FromQuery] string pageNumber, [FromQuery] string pageSize)
         {
